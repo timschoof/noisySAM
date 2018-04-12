@@ -17,6 +17,9 @@ nTrials=size(d,1)-1;
 
 iTrial = find(strcmp([d(1,:)], 'trial'));
 iSNR = find(strcmp([d(1,:)], 'MI'));
+if isempty(iSNR)
+   iSNR = find(strcmp([d(1,:)], 'dBatten'));
+end
 iCorrect = find(strcmp([d(1,:)], 'correct'));
 
 trial=[]; SNR=[]; correct=[]; response=[]; order=[];

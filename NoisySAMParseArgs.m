@@ -35,11 +35,14 @@ p.addParameter('propLongMaskerPreTarget', 0.5, @isnumeric);
 % LongMaskerNoise. This is the proportion of time that the 'extra' masker
 % duration is put at the start of the trial
 p.addParameter('preSilence', 100, @isnumeric);
-% an interval of silence prepended to the wavr to try to avoid sound glitches in Windows
+% an interval of silence prepended to the wave to try to avoid sound glitches in Windows
 
+p.addParameter('usePlayrec', 1, @isnumeric); % are you using playrec? yes = 1, no = 0
+p.addParameter('VolumeSettingsFile', 'VolumeSettings.txt', @ischar);
 p.addParameter('rms2use', 0.1, @isnumeric); % for the target
 p.addParameter('RiseFall', 50, @isnumeric);
 p.addParameter('ISI', 400, @isnumeric);
+p.addParameter('SampFreq', 44100, @isnumeric);
 p.addParameter('dBSPL', 70, @isnumeric);
 % the nominal level of the fixed signal or noise - not yet used
 
@@ -76,10 +79,12 @@ p.addParameter('IgnoreTrials', 3, @isnumeric); % number of initial trials to ign
 p.addParameter('OutputDir','results', @ischar);
 p.addParameter('StartMessage', 'none', @ischar);
 p.addParameter('MaxBumps', 3, @isnumeric);
-p.addParameter('SampFreq', 44100, @isnumeric);
-p.addParameter('VolumeSettingsFile', 'VolumeSettings.txt', @ischar);
-
 % p.addParamValue('PresentInQuiet', 0, @(x)x==0 || x==1);
+
+%% parameters concerned with tracking the absolute threshold of the stimuli
+%  with a given modulation depth
+p.addParameter('trackAbsThreshold', 0, @isnumeric);
+p.addParameter('modDepthAbsThreshold', -99, @isnumeric);
 
 p.parse(ListenerName, varargin{:});
 sArgs=p.Results;

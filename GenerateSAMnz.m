@@ -17,7 +17,11 @@ Nz=Nz(:); % ensure a column vector
 Nz = Nz(1:NzSamples);
 % function y = sam(x, rate, modphase, index, SampFreq)
 if ModulationPresent
-    modIndex=10^(p.SNR_dB/20);
+    if ~p.trackAbsThreshold % the normal thing to do
+        modIndex=10^(p.SNR_dB/20);
+    else
+        modIndex=10^(p.modDepthAbsThreshold/20);
+    end
     [Nz, modulator] = sam(Nz, p.ModulationRate, p.ModulationPhase, modIndex, p.SampFreq);
 else
     modulator=ones(NzSamples,1);

@@ -2,37 +2,32 @@ function NoisySAM(varargin)
 % Run an experiment
 
 % Version 1.0 -- March 2018
+% Version 2.0 -- April 2018
+%   implement option to use playrec for controlling fireface
+%   correct errors in writing out AM stimulus without background noise
+%   clear up some minor details
+% Version 2.5 -- April 2018
+%   allow estimation of absolute threshold
 %
-% Stuart Rosen
+% Stuart Rosen & Tim Schoof
 
 %% initialisation and fixed parameter values
-VERSION=1.0;
+VERSION=2.0;
 rng('shuffle')
-levitts_index = 1;
-player = 1; % are you using playrec? yes = 1, no = 0
-
-%% Get audio device ID based on the USB name of the device.
-if player == 1 % if you're using playrec
-    dev = playrec('getDevices');
-    d = find( cellfun(@(x)isequal(x,'ASIO Fireface USB'),{dev.name}) ); % find device of interest - RME FireFace channels 3+4
-    playDeviceInd = dev(d).deviceID; 
-    recDeviceInd = dev(d).deviceID;
-end
 
 %% get control parameters by picking up defaults and specified values from args
 if ~rem(nargin,2)
     error('You should not have an even number of input arguments');
 end
 p=NoisySAMParseArgs(varargin{1},varargin{2:end});
-% % now set all parameters obtained
-% fVars=fieldnames(SpecifiedArgs);
-% for f=1:length(fVars)
-%     if ischar(eval(['SpecifiedArgs.' char(fVars{f})]))
-%         eval([char(fVars{f}) '=' '''' eval(['SpecifiedArgs.' char(fVars{f})]) ''';']);
-%     else % it's a number
-%         eval([char(fVars{f}) '='  num2str(eval(['SpecifiedArgs.' char(fVars{f})])) ';'])
-%     end
-% end
+
+%% Get audio device ID based on the USB name of the device.
+if p.usePlayrec == 1 % if you're using playrec
+    dev = playrec('getDevices');
+    d = find( cellfun(@(x)isequal(x,'ASIO Fireface USB'),{dev.name}) ); % find device of interest - RME FireFace channels 3+4
+    playDeviceInd = dev(d).deviceID; 
+    recDeviceInd = dev(d).deviceID;
+end
 
 %% Settings for level
 if ispc
@@ -43,6 +38,7 @@ else ismac
 end
 
 %% further initialisations
+levitts_index = 1;
 LEVITTS_CONSTANT = [1 p.LevittsK];
 
 % for fixed level testing
@@ -124,7 +120,11 @@ SummaryOutFile = fullfile(p.OutputDir, [FileListenerName '_sum.csv']);
 
 %% write some headings and preliminary information to the output file
 fout = fopen(OutFile, 'at');
-fprintf(fout, 'listener,CondCode,date,time,trial,MI,correct,order,response,step,rTime,rev');
+if ~p.trackAbsThreshold % the normal case
+    fprintf(fout, 'listener,CondCode,date,time,trial,MI,correct,order,response,step,rTime,rev');
+else % tracking absolute thresholds
+    fprintf(fout, 'listener,CondCode,date,time,trial,dBatten,correct,order,response,step,rTime,rev');
+end
 fclose(fout);
 
 %% wait to start
@@ -142,29 +142,31 @@ while (num_turns<p.FINAL_TURNS  && limit<=p.MaxBumps && trial<(p.MAX_TRIALS-1))
         p.Order=randi(3);
         
         % generate the appropriate sounds
-        [w, AMnz]=GenerateSAMtriple(p);
+        [w, AMnz, modulator]=GenerateSAMtriple(p);
+
         %% ensure no overload
         % function [OutWave, flag] = NoClipStereo(InWave,message)
         [w, flag] = NoClipStereo(w, sprintf('Trial %d',trial));
         if p.outputAllWavs
+            % write out the trial
             audiowrite(fullfile(p.wavOutputDir,sprintf('T%02d%+02d-o%d.wav',trial,round(p.SNR_dB),p.Order)),w,p.SampFreq);
+            % write out 
             [AMnz, flag] = NoClipStereo(AMnz, 'target file');
-            audiowrite(fullfile(p.wavOutputDir,sprintf('T%02d%+02dTn.wav',trial,round(p.SNR_dB))),AMnz,p.SampFreq);
-            % function [Nz, flatNz, modulator]=GenerateSAMnz(ModulationPresent, p)
-            [~, ~, modulator]=GenerateSAMnz(1, p);
-            audiowrite(fullfile(p.wavOutputDir,sprintf('T%02d%+02dMod.wav',trial,round(p.SNR_dB))),modulator/2,p.SampFreq);
+            audiowrite(fullfile(p.wavOutputDir,sprintf('T%02d%+02d-Tn.wav',trial,round(p.SNR_dB))),AMnz,p.SampFreq);
+            % srite out the modulator
+            audiowrite(fullfile(p.wavOutputDir,sprintf('T%02d%+02d-Mod.wav',trial,round(p.SNR_dB))),modulator/2,p.SampFreq);
         end
         %% play it out and score it.
         % intialize playrec if necessary
-        if player == 1 % if you're using playrec
+        if p.usePlayrec == 1 % if you're using playrec
             if playrec('isInitialised')
                 fprintf('Resetting playrec as previously initialised\n');
                 playrec('reset');
             end
             playrec('init', p.SampFreq, playDeviceInd, recDeviceInd);
         end
-        if ~p.DEBUG
-            [response,p] = PlayAndReturnResponse3I3AFC(w,trial,p,player);
+        if ~p.DEBUG % normal operation
+            [response,p] = PlayAndReturnResponse3I3AFC(w,trial,p);
         %% stat rat section for output format, etc.
         else 
             % get 2 right at the start of session, and then make
@@ -332,7 +334,7 @@ elseif p.PlotTrackFile
     plotTrackFile(OutFile, FileListenerName); %strrep(strrep(OutFile, '.csv', ''))
 end
 
-if player==1
+if p.usePlayrec==1
     % close psych toolbox audio
     PsychPortAudio('DeleteBuffer');
     PsychPortAudio('Close');

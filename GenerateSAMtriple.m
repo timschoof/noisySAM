@@ -1,11 +1,13 @@
 function [w, AMnz, modulator]=GenerateSAMtriple(p)
+%
+% Vs 2.0 - return only the modulator from the modulated sound
+
 ISIsamples=samplify(p.ISI,p.SampFreq);
 ISIwave=zeros(ISIsamples,1);
 
-AMnz=[];
-w=[];
+AMnz=[]; % contains the stimuli without background noise
+w=[]; % the actual trial stimulus
 if p.LongMaskerNoise<=0
-    % error('pulsed background noises not implemented');
     % calculate the necessary offsets to make the target pulse the same
     % duration as the masker
     BackNzSamples=samplify(p.NoiseDuration,p.SampFreq);
@@ -15,14 +17,29 @@ if p.LongMaskerNoise<=0
     for i=1:3
         % generate one signal
         % function [Nz, flatNz, modulator]=GenerateSAMnz(ModulationPresent, p)
-        [AM, flatNz, modulator]=GenerateSAMnz(p.Order==i, p);
+        [AM, flatNz, mm]=GenerateSAMnz(p.Order==i, p);
+        if p.Order==i
+            modulator=mm;
+        end
+        % if tracking absolute thresholds, scale the modulated tone by the
+        % current SNR level. Otherwise, zero out the unmodulated noises
+        if p.trackAbsThreshold
+            if p.Order==i
+                AM = AM * 10^(p.SNR_dB/20);
+            else
+                AM=AM*0;
+            end
+        end
+        
         % centre the AM pulse in the background noise
         AM = vertcat(pre, AM, post);
+        AMnz = vertcat(AMnz, AM);
         % generate a single pulse of background noise
         backNz=GenerateBackgroundNoiseSAM(p);
         w=vertcat(w, AM+backNz);
         if i<3
-            w=vertcat(w,ISIwave);            
+            w=vertcat(w,ISIwave);
+            AMnz=vertcat(AMnz,ISIwave);
         end
     end
 else % long masker (actually background noise)
@@ -30,8 +47,21 @@ else % long masker (actually background noise)
     % construct the 3 intervals with ISIs
     for i=1:3
         % function [Nz, flatNz, modulator]=GenerateSAMnz(ModulationPresent, p)
-        [Nz, flatNz, modulator]=GenerateSAMnz(p.Order==i, p);
-        AMnz=vertcat(AMnz, Nz);
+        [AM, flatNz, mm]=GenerateSAMnz(p.Order==i, p);
+        if p.Order==i
+            modulator=mm;
+        end
+        % if tracking absolute thresholds, scale the modulated tone by the
+        % current SNR level. Otherwise, zero out the unmodulated noises
+        if p.trackAbsThreshold
+            if p.Order==i
+                AM = AM * 10^(p.SNR_dB/20);
+            else
+                AM=AM*0;
+            end
+        end
+        
+        AMnz=vertcat(AMnz, AM);
         if i<3
             AMnz=vertcat(AMnz,ISIwave);
         end
