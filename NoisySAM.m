@@ -144,6 +144,15 @@ while (num_turns<p.FINAL_TURNS  && limit<=p.MaxBumps && trial<(p.MAX_TRIALS-1))
         % generate the appropriate sounds
         [w, AMnz, modulator]=GenerateSAMtriple(p);
 
+        % determine the ear(s) to play out the stimuli
+        noSound = zeros(size(w)); % make a silent channel for monaural presentations
+        switch upper(p.ear)
+            case 'L', w = [w noSound];
+            case 'R', w = [noSound w];
+            case 'B', w = [w w];
+            otherwise error('variable ear must be one of L, R or B')
+        end
+        
         %% ensure no overload
         % function [OutWave, flag] = NoClipStereo(InWave,message)
         [w, flag] = NoClipStereo(w, sprintf('Trial %d',trial));
@@ -160,7 +169,6 @@ while (num_turns<p.FINAL_TURNS  && limit<=p.MaxBumps && trial<(p.MAX_TRIALS-1))
         % intialize playrec if necessary
         if p.usePlayrec == 1 % if you're using playrec
             if playrec('isInitialised')
-                fprintf('Resetting playrec as previously initialised\n');
                 playrec('reset');
             end
             playrec('init', p.SampFreq, playDeviceInd, recDeviceInd);

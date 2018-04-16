@@ -40,6 +40,7 @@ p.addParameter('preSilence', 100, @isnumeric);
 p.addParameter('usePlayrec', 1, @isnumeric); % are you using playrec? yes = 1, no = 0
 p.addParameter('VolumeSettingsFile', 'VolumeSettings.txt', @ischar);
 p.addParameter('rms2use', 0.1, @isnumeric); % for the target
+p.addParameter('ear', 'B', @ischar); % B, L, or R ear(s)
 p.addParameter('RiseFall', 50, @isnumeric);
 p.addParameter('ISI', 400, @isnumeric);
 p.addParameter('SampFreq', 44100, @isnumeric);
