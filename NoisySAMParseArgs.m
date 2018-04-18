@@ -27,10 +27,10 @@ p.addParameter('SignalDuration', 400, @isnumeric);
 p.addParameter('NoiseDuration', 500, @isnumeric);
 % the duration of the masker pulse. If longer than the target, the target is
 % centred in it. Only relevant if LongMaskerNoise=0
-p.addParameter('LongMaskerNoise', 3000, @isnumeric);
+p.addParameter('LongMaskerNoise', 2400, @isnumeric);
 % if 0, masker noise is pulsed along with target intervals
 % if >0 = continuous through triple at given duration (ms)
-p.addParameter('propLongMaskerPreTarget', 0.5, @isnumeric);
+p.addParameter('propLongMaskerPreTarget', 0.9, @isnumeric);
 % a parameter to put targets towards one end or the other of the
 % LongMaskerNoise. This is the proportion of time that the 'extra' masker
 % duration is put at the start of the trial
@@ -38,13 +38,13 @@ p.addParameter('preSilence', 100, @isnumeric);
 % an interval of silence prepended to the wave to try to avoid sound glitches in Windows
 
 p.addParameter('usePlayrec', 1, @isnumeric); % are you using playrec? yes = 1, no = 0
-p.addParameter('VolumeSettingsFile', 'VolumeSettings.txt', @ischar);
-p.addParameter('rms2use', 0.1, @isnumeric); % for the target
-p.addParameter('ear', 'B', @ischar); % B, L, or R ear(s)
+p.addParameter('VolumeSettingsFile', 'VolumeSettings4kHz.txt', @ischar);
+p.addParameter('rms2use', 0.16, @isnumeric); % for the target
+p.addParameter('ear', 'L', @ischar); % B, L, or R ear(s)
 p.addParameter('RiseFall', 50, @isnumeric);
 p.addParameter('ISI', 400, @isnumeric);
 p.addParameter('SampFreq', 44100, @isnumeric);
-p.addParameter('dBSPL', 70, @isnumeric);
+p.addParameter('dBSPL', 80, @isnumeric);
 % the nominal level of the fixed signal or noise - not yet used
 
 %% parameters concerned with tracking and the task
@@ -75,7 +75,7 @@ p.addParameter('HiBackNzHiPass',4250, @isnumeric);
 p.addParameter('PlotTrackFile', 0, @isnumeric); % once test is finished
 p.addParameter('DEBUG', 0, @isnumeric);
 p.addParameter('outputAllWavs', 0, @isnumeric); % for debugging purposes
-p.addParameter('MAX_SNR_dB', 22, @isnumeric);
+p.addParameter('MAX_SNR_dB', 0, @isnumeric);
 p.addParameter('IgnoreTrials', 3, @isnumeric); % number of initial trials to ignore errors on
 p.addParameter('OutputDir','results', @ischar);
 p.addParameter('StartMessage', 'none', @ischar);

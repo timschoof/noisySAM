@@ -68,17 +68,34 @@ else % long masker (actually background noise)
     end
     %% generate and add in background noise when it is long,
     %  i.e., played through the triple
-    if p.rms2useBackNz > 0
-        w=GenerateBackgroundNoiseSAM(p);
-        % centre targets in background noise
-        xtra = length(w)-length(AMnz);
-        xtraFront = ceil(p.propLongMaskerPreTarget*xtra);
-        if xtra>0
-            AMnz=vertcat(zeros(xtraFront,1),AMnz, zeros(xtra-xtraFront,1));
+    if ~ p.trackAbsThreshold
+        if p.rms2useBackNz > 0
+            w=GenerateBackgroundNoiseSAM(p);
+            % centre targets in background noise
+            xtra = length(w)-length(AMnz);
+            xtraFront = ceil(p.propLongMaskerPreTarget*xtra);
+            if xtra>0
+                AMnz=vertcat(zeros(xtraFront,1),AMnz, zeros(xtra-xtraFront,1));
+            end
+            w = w + AMnz;
+        else
+            w = AMnz;
         end
-        w = w + AMnz;
-    else
-        w = AMnz;
+    else % if tracking absolute threshold
+        if p.rms2useBackNz > 0
+            w=GenerateBackgroundNoiseSAM(p);
+            % scale background noise 
+            w = w * 10^(p.SNR_dB/20);
+            % centre targets in background noise
+            xtra = length(w)-length(AMnz);
+            xtraFront = ceil(p.propLongMaskerPreTarget*xtra);
+            if xtra>0
+                AMnz=vertcat(zeros(xtraFront,1),AMnz, zeros(xtra-xtraFront,1));
+            end
+            w = w + AMnz;
+        else
+            w = AMnz;
+        end        
     end
     
 end

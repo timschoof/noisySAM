@@ -342,9 +342,9 @@ elseif p.PlotTrackFile
     plotTrackFile(OutFile, FileListenerName); %strrep(strrep(OutFile, '.csv', ''))
 end
 
-if p.usePlayrec==1
-    % close psych toolbox audio
-    PsychPortAudio('DeleteBuffer');
-    PsychPortAudio('Close');
-end
+% if p.usePlayrec==1
+%     % close psych toolbox audio
+%     PsychPortAudio('DeleteBuffer');
+%     PsychPortAudio('Close');
+% end
 
