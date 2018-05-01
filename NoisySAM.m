@@ -37,6 +37,21 @@ else ismac
     % VolumeSettingsFile='VolumeSettingsMac.txt';
 end
 
+%% Set RME Slider
+if strcmp(p.RMEslider,'TRUE')
+    % read in RME settings file
+    RMEsetting=robustcsvread('RMEsettings.csv');
+    % select columns with relevant info
+    LevelCol=strmatch('dBSPL',strvcat(RMEsetting{1,:}));
+    SliderCol=strmatch('slider',strvcat(RMEsetting{1,:}));
+    % find index of dBSPL level
+    index = find(strcmp({RMEsetting{:,LevelCol}}, num2str(p.dBSPL)));
+    % find the corresponding RME slider setting
+    RMEattn = RMEsetting{index,SliderCol};
+    % set RME slider
+    SetMainSlider(str2double(RMEattn))
+end
+
 %% further initialisations
 levitts_index = 1;
 LEVITTS_CONSTANT = [1 p.LevittsK];

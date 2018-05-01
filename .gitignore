@@ -1,3 +1,9 @@
 # results folders
 results/
 results\ for\ real/
+
+# RME snapshots
+NoisySAM_T30.tmss
+NoisySAM_T40.tmss
+NoisySAM_T70.tmss
+NoisySAM_T80.tmss

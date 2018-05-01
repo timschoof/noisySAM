@@ -1,6 +1,6 @@
-nBlocks,nPracticeTrials,ear,MAX_TRIALS,dBSPL,,
+nBlocks,nPracticeTrials,ear,MAX_TRIALS,dBSPL,StartMessage,
 0,1,L,5,80,,
 1,0,L,30,80,This will be fairly loud,
 1,0,L,30,40,This will be rather quiet,
-1,0,L,30,40,This will be rather quiet,
 1,0,L,30,80,This will be fairly loud,
+1,0,L,30,40,This will be rather quiet,
