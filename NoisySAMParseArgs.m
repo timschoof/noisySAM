@@ -119,3 +119,16 @@ end
 sArgs.initialDelay = sArgs.initialDelay + sArgs.preSilence;
 
 
+%% Get audio device ID based on the USB name of the device.
+if sArgs.usePlayrec == 1 % if you're using playrec
+    dev = playrec('getDevices');
+    d = find( cellfun(@(x)isequal(x,'ASIO Fireface USB'),{dev.name}) ); % find device of interest - RME FireFace channels 3+4
+    sArgs.playDeviceInd = dev(d).deviceID; 
+    sArgs.recDeviceInd = dev(d).deviceID;
+end
+
+%% Read in feedback faces
+sArgs=readFaces(sArgs);
+
+
+

@@ -21,14 +21,6 @@ if ~rem(nargin,2)
 end
 p=NoisySAMParseArgs(varargin{1},varargin{2:end});
 
-%% Get audio device ID based on the USB name of the device.
-if p.usePlayrec == 1 % if you're using playrec
-    dev = playrec('getDevices');
-    d = find( cellfun(@(x)isequal(x,'ASIO Fireface USB'),{dev.name}) ); % find device of interest - RME FireFace channels 3+4
-    playDeviceInd = dev(d).deviceID; 
-    recDeviceInd = dev(d).deviceID;
-end
-
 %% Settings for level
 if ispc
     [~, OutRMS]=SetLevels(p.VolumeSettingsFile);
@@ -37,19 +29,9 @@ else ismac
     % VolumeSettingsFile='VolumeSettingsMac.txt';
 end
 
-%% Set RME Slider
+%% Set RME Slider if necessary
 if strcmp(p.RMEslider,'TRUE')
-    % read in RME settings file
-    RMEsetting=robustcsvread('RMEsettings.csv');
-    % select columns with relevant info
-    LevelCol=strmatch('dBSPL',strvcat(RMEsetting{1,:}));
-    SliderCol=strmatch('slider',strvcat(RMEsetting{1,:}));
-    % find index of dBSPL level
-    index = find(strcmp({RMEsetting{:,LevelCol}}, num2str(p.dBSPL)));
-    % find the corresponding RME slider setting
-    RMEattn = RMEsetting{index,SliderCol};
-    % set RME slider
-    SetMainSlider(str2double(RMEattn))
+    PrepareRMEslider('RMEsettings.csv',p.dBSPL);
 end
 
 %% further initialisations
@@ -181,13 +163,6 @@ while (num_turns<p.FINAL_TURNS  && limit<=p.MaxBumps && trial<(p.MAX_TRIALS-1))
             audiowrite(fullfile(p.wavOutputDir,sprintf('T%02d%+02d-Mod.wav',trial,round(p.SNR_dB))),modulator/2,p.SampFreq);
         end
         %% play it out and score it.
-        % intialize playrec if necessary
-        if p.usePlayrec == 1 % if you're using playrec
-            if playrec('isInitialised')
-                playrec('reset');
-            end
-            playrec('init', p.SampFreq, playDeviceInd, recDeviceInd);
-        end
         if ~p.DEBUG % normal operation
             [response,p] = PlayAndReturnResponse3I3AFC(w,trial,p);
         %% stat rat section for output format, etc.
