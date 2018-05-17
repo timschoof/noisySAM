@@ -34,7 +34,7 @@ p.addParameter('propLongMaskerPreTarget', 0.9, @isnumeric);
 % a parameter to put targets towards one end or the other of the
 % LongMaskerNoise. This is the proportion of time that the 'extra' masker
 % duration is put at the start of the trial
-p.addParameter('preSilence', 100, @isnumeric);
+p.addParameter('preSilence', 0, @isnumeric);
 % an interval of silence prepended to the wave to try to avoid sound glitches in Windows
 
 p.addParameter('usePlayrec', 1, @isnumeric); % are you using playrec? yes = 1, no = 0
