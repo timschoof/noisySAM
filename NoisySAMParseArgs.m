@@ -73,7 +73,7 @@ p.addParameter('HiBackNzLoPass',10000, @isnumeric);
 p.addParameter('HiBackNzHiPass',4250, @isnumeric);
 % p.addParameter('BackNzPulsed',0, @isnumeric); % 0 = continuous through triple
 %% parameters concerned with debugging
-p.addParameter('PlotTrackFile', 0, @isnumeric); % once test is finished
+p.addParameter('PlotTrackFile', 1, @isnumeric); % once test is finished
 p.addParameter('DEBUG', 0, @isnumeric);
 p.addParameter('outputAllWavs', 0, @isnumeric); % for debugging purposes
 p.addParameter('MAX_SNR_dB', 0, @isnumeric);

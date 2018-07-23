@@ -327,7 +327,7 @@ fclose('all');
 set(0,'ShowHiddenHandles','on');
 delete(findobj('Type','figure'));
 if ~p.DEBUG && ~p.PlotTrackFile
-    FinishButton; % indicate test is over
+%     FinishButton; % indicate test is over
 elseif p.PlotTrackFile
     plotTrackFile(OutFile, FileListenerName); %strrep(strrep(OutFile, '.csv', ''))
 end
