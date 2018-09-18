@@ -8,6 +8,9 @@ function [response,p] = PlayAndReturnResponse3I3AFC(Wave2Play,trial,p)
 % 4 CorrectImage
 % 5 IncorrectImage
 % 6 trial
+if ~isfield(p, 'ToneDuration')
+    p.ToneDuration = p.SignalDuration;
+end
 
 OneSoundDuration=max(p.NoiseDuration,p.ToneDuration);
 
