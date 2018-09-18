@@ -9,9 +9,8 @@ function [response,p] = PlayAndReturnResponse3I3AFC(Wave2Play,trial,p)
 % 5 IncorrectImage
 % 6 trial
 
-% OneSoundDuration=max(p.NoiseDuration,p.ToneDuration); % for pulsed
-% background noise
-OneSoundDuration=max(p.SignalDuration);
+OneSoundDuration=max(p.NoiseDuration,p.ToneDuration);
+
 if trial==1
     p.responseGUI = ResponsePad3I3AFC(OneSoundDuration,p.ISI,p.Order,p.CorrectImage,p.IncorrectImage,0);
     pause(0.5);
