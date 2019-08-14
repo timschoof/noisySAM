@@ -1,0 +1,2 @@
+nBlocks,nPracticeTrials,ear,MAX_TRIALS,dBSPL,StartMessage,SignalDuration,NoiseDuration,LongMaskerNoise,BackNzLevel,START_change_dB
+0,1,L,5,80,This will be fairly loud,4000,5000,24000,-10,0
